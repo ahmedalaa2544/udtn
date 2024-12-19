@@ -13,7 +13,7 @@ import { UserDbService } from '../../DB/user-db/user-db.service';
 export class AuthenticationGuard implements CanActivate {
   constructor(
     private readonly _jwtService: JwtService,
-    private readonly _userDbService: UserDbService,
+    private readonly userDbService: UserDbService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -31,8 +31,8 @@ export class AuthenticationGuard implements CanActivate {
       });
 
       request.id = payload.id;
-      const user = await this._userDbService.findById(payload.id);
-
+      const user = await this.userDbService.findById(payload.id);
+      request.user = user;
       if (!user) throw new NotFoundException('User not found!');
       // pass user in the request
       request.user = user;

@@ -10,13 +10,19 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { AuthenticationGuard } from 'src/guards/authentication/authentication.guard';
-
+import {
+  Roles,
+  AuthorizationGuard,
+  Role,
+} from 'src/guards/authorization/authorization.guard';
+import { ProductDto } from './product.dto';
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Post('')
-  @UseGuards(AuthenticationGuard)
-  async createProduct(@Body() body: any) {
+  @Roles(Role.Admin)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  async createProduct(@Body() body: ProductDto) {
     return await this.productService.createProduct(body);
   }
   @Get('')
@@ -28,12 +34,14 @@ export class ProductController {
     return await this.productService.getProductById(id);
   }
   @Put(':id')
-  @UseGuards(AuthenticationGuard)
-  async updateProduct(@Param('id') id: string, @Body() body: any) {
+  @Roles(Role.Admin)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  async updateProduct(@Param('id') id: string, @Body() body: ProductDto) {
     return await this.productService.updateProduct(id, body);
   }
   @Delete(':id')
-  @UseGuards(AuthenticationGuard)
+  @Roles(Role.Admin)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async deleteProduct(@Param('id') id: string) {
     return await this.productService.deleteProduct(id);
   }
